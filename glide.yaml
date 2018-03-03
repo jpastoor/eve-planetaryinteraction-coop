@@ -1,0 +1,6 @@
+package: github.com/jpastoor/eveplanetaryinteractioncoop
+import:
+- package: github.com/google/uuid
+  version: ~0.2.0
+- package: github.com/jinzhu/gorm
+- package: github.com/gorilla/mux

@@ -9,17 +9,18 @@ import (
 )
 
 type Transaction struct {
-	Id           string  `gorm:"PRIMARY_KEY"`
-	CreationDate time.Time
-	Location     string
-	SubLocation  string
-	Who          *Player `gorm:"foreignkey:PlayerName"`
-	PlayerName   string
-	Action       string
-	Status       string
-	Type         *Type   `gorm:"foreignkey:TypeName"`
-	TypeName     string
-	Quantity     int
+	Id            string  `gorm:"PRIMARY_KEY"`
+	CreationDate  time.Time
+	Location      string
+	SubLocation   string
+	Who           *Player `gorm:"foreignkey:PlayerName"`
+	PlayerName    string
+	Action        string
+	Status        string
+	Type          *Type   `gorm:"foreignkey:TypeName"`
+	TypeName      string
+	Quantity      int
+	MarkedForCorp bool
 }
 
 func (t Transaction) hash() string {

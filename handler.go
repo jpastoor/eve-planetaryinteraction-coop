@@ -8,7 +8,15 @@ type Handler struct {
 /**
 TODO How to make sure transactions don't get double processed
  */
+/**
+TODO PRIO We need to make sure that unlocking/locking a stack does not necessarily change owernership. For instance if I want to take half of a stack, so unlock it, take partially, then relock the result.
 
+Maybe we need to rethink this altogether.
+
+Possible solutions
+- Fuzzy logic to cancel transactions or modify transactions when they happen close to eachother in time
+- (Easier) Maybe handle transactions in batch only, for instance per day, so you first calculate the netto add/take per person per type
+ */
 func (h *Handler) Process(ts []Transaction) (invMuts []InventoryMutation, ledgerMuts []LedgerMutation, err error) {
 	for _, t := range ts {
 		if t.Action == ACTION_UNLOCK {

@@ -16,6 +16,6 @@ func TestEveMarketerAPI_FetchPrice(t *testing.T) {
 	}
 
 	if price > 1000 || price < 100 {
-		t.Fatalf("Expected price between 100-1000, but price is %d", price)
+		t.Fatalf("Expected price between 100-1000, but price is %f", price)
 	}
 }

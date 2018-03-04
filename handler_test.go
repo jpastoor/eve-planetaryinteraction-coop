@@ -6,6 +6,11 @@ import (
 	"reflect"
 )
 
+/**
+This acts as a sort of integration test since a lot of the handle functionality in the ledger and inventory classes
+is tested by this as well. We add 2 stacks to the inventory (total 2000 and then remove 1500 from it, so we have a
+removed and a partial stack left).
+ */
 func TestHandler_Process(t *testing.T) {
 
 	h := Handler{

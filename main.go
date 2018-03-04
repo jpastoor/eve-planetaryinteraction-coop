@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"encoding/json"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -18,12 +19,17 @@ func main() {
 	db := connectDb(dbConnStr)
 	defer db.Close()
 
-	db.AutoMigrate(&Transaction{}, &Type{}, &Player{})
+	db.AutoMigrate(&Transaction{}, &Type{}, &Player{}, &LedgerMutation{})
 
 	r := mux.NewRouter()
 
 	s := NewServer(r, db)
-	http.ListenAndServe(":1234", s.r)
+
+	// Add CORS headers and start http listener
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+	http.ListenAndServe(":1234", handlers.CORS(originsOk, headersOk, methodsOk)(s.r))
 }
 
 func connectDb(dbConnStr string) *gorm.DB {

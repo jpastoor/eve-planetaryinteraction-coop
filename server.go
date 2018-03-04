@@ -23,13 +23,20 @@ func NewServer(r *mux.Router, db *gorm.DB) (*Server) {
 		db:   db,
 	}
 
+	r.HandleFunc("/", s.GetRoot).Methods(http.MethodGet)
 	r.HandleFunc("/parse", s.parseLog).Methods(http.MethodPost)
 	r.HandleFunc("/transactions", s.GetTransactions).Methods(http.MethodGet)
 	r.HandleFunc("/transactions/{transactionId}/markForCorp", s.MarkTransactionForCorp).Methods(http.MethodPost)
-	r.HandleFunc("/ledgers", s.GetLedgers).Methods(http.MethodGet)
-	r.HandleFunc("/ledgers/reset", s.ResetLedgers).Methods(http.MethodPost)
+	r.HandleFunc("/inventory", s.GetInventory).Methods(http.MethodGet)
+	r.HandleFunc("/ledger", s.GetLedger).Methods(http.MethodGet)
+	r.HandleFunc("/ledger/reset", s.ResetLedger).Methods(http.MethodPost)
 
 	return s
+}
+
+func (s *Server) GetRoot(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write([]byte("Server is working"))
 }
 
 func (s *Server) GetTransactions(w http.ResponseWriter, r *http.Request) {
@@ -64,11 +71,15 @@ func (s *Server) MarkTransactionForCorp(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (s *Server) GetLedgers(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetInventory(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-func (s *Server) ResetLedgers(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetLedger(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+func (s *Server) ResetLedger(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 

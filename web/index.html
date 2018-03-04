@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Eve Planetary Interaction Coop</title>
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.js"
+            integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+            crossorigin="anonymous"></script>
+    <script language="JavaScript">
+        $(document).ready(function () {
+            $("#response").html("<strong>Poking server...</strong>");
+            $.ajax({
+                url: "http://localhost:1234/",
+                success: [function (result) {
+                    $("#response").html("<strong>" + result + "</strong>");
+                }],
+                error: [function (result) {
+                    $("#response").html("<strong>Server is not working, see browser log</strong>");
+                    console.log(result);
+                }]
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="response">No response yet from server</div>
+</body>
+</html>

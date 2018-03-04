@@ -1,0 +1,114 @@
+[
+  {
+    "buy": {
+      "forQuery": {
+        "bid": true,
+        "types": [
+          2393
+        ],
+        "regions": [
+          10000002
+        ],
+        "systems": [
+          30000142
+        ],
+        "hours": 24,
+        "minq": 1
+      },
+      "volume": 9707289,
+      "wavg": 307.57,
+      "avg": 325.03,
+      "variance": 1377.38,
+      "stdDev": 37.11,
+      "median": 326.61,
+      "fivePercent": 347.10,
+      "max": 347.10,
+      "min": 170.00,
+      "highToLow": true,
+      "generated": 1520151194899
+    },
+    "sell": {
+      "forQuery": {
+        "bid": false,
+        "types": [
+          2393
+        ],
+        "regions": [
+          10000002
+        ],
+        "systems": [
+          30000142
+        ],
+        "hours": 24,
+        "minq": 1
+      },
+      "volume": 5976669,
+      "wavg": 519.01,
+      "avg": 522.67,
+      "variance": 13014.50,
+      "stdDev": 114.08,
+      "median": 499.99,
+      "fivePercent": 449.70,
+      "max": 796.87,
+      "min": 449.70,
+      "highToLow": false,
+      "generated": 1520151194899
+    }
+  },
+  {
+    "buy": {
+      "forQuery": {
+        "bid": true,
+        "types": [
+          3683
+        ],
+        "regions": [
+          10000002
+        ],
+        "systems": [
+          30000142
+        ],
+        "hours": 24,
+        "minq": 1
+      },
+      "volume": 10601111,
+      "wavg": 307.15,
+      "avg": 315.63,
+      "variance": 492.13,
+      "stdDev": 22.18,
+      "median": 305.00,
+      "fivePercent": 332.57,
+      "max": 332.57,
+      "min": 271.00,
+      "highToLow": true,
+      "generated": 1520148603787
+    },
+    "sell": {
+      "forQuery": {
+        "bid": false,
+        "types": [
+          3683
+        ],
+        "regions": [
+          10000002
+        ],
+        "systems": [
+          30000142
+        ],
+        "hours": 24,
+        "minq": 1
+      },
+      "volume": 24041013,
+      "wavg": 475.49,
+      "avg": 440.25,
+      "variance": 19115.48,
+      "stdDev": 138.26,
+      "median": 413.49,
+      "fivePercent": 354.51,
+      "max": 999.97,
+      "min": 353.99,
+      "highToLow": false,
+      "generated": 1520148603787
+    }
+  }
+]

@@ -18,32 +18,67 @@ Possible solutions
 - (Easier) Maybe handle transactions in batch only, for instance per day, so you first calculate the netto add/take per person per type
  */
 func (h *Handler) Process(ts []Transaction) (invMuts []InventoryMutation, ledgerMuts []LedgerMutation, err error) {
+
+	// First we update the playerName of each transaction
 	for _, t := range ts {
-		if t.Action == ACTION_UNLOCK {
-			// First we update the inventory
-			ninvMuts, err := h.inv.handleActionUnlock(t)
-			if err != nil {
-				return nil, nil, err
-			}
+		if t.Who.Main != "" {
+			t.PlayerName = t.Who.Main
+		}
 
-			// Based on inventory changes, we know how to update the ledger
-			nledgerMuts, err := h.ledger.HandleUnlock(t, invMuts)
-			if err != nil {
-				return nil, nil, err
-			}
+		if t.MarkedForCorp {
+			t.PlayerName = "ADHC"
+		}
+	}
 
-			invMuts = append(invMuts, ninvMuts...)
-			ledgerMuts = append(ledgerMuts, nledgerMuts...)
+	// Then we make a sum of all the item locks and unlocks per player
+	data := map[int]map[string]int{}
+	for _, t := range ts {
+		if _, exists := data[t.Type.TypeId]; !exists {
+			data[t.Type.TypeId] = map[string]int{}
+		}
+
+		if _, exists := data[t.Type.TypeId][t.PlayerName]; !exists {
+			data[t.Type.TypeId][t.PlayerName] = 0
 		}
 
 		if t.Action == ACTION_LOCK {
-			// Update inventory, no change to ledger
-			ninvMuts, err := h.inv.handleActionLock(t)
-			if err != nil {
-				return nil, nil, err
-			}
+			data[t.Type.TypeId][t.PlayerName] += t.Quantity
+		}
 
-			invMuts = append(invMuts, ninvMuts...)
+		if t.Action == ACTION_UNLOCK {
+			data[t.Type.TypeId][t.PlayerName] -= t.Quantity
+		}
+	}
+
+	var creditMutations []InventoryMutation
+	var debitMutations []InventoryMutation
+
+	// We then process all the positive amounts
+	for typeId, playerMap := range data {
+		for playerName, amount := range playerMap {
+			if amount > 0 {
+				invMut := InventoryMutation{
+					PlayerName: playerName,
+					TypeId:     typeId,
+					Change:     amount,
+				}
+
+				h.inv.Add(invMut)
+				debitMutations = append(debitMutations, invMut)
+			}
+		}
+	}
+
+	// Then we process all the negative amounts
+	for typeId, playerMap := range data {
+		for playerName, amount := range playerMap {
+			if amount < 0 {
+				creditMutations = append(creditMutations, h.inv.Sub(InventoryMutation{
+					PlayerName: playerName,
+					TypeId:     typeId,
+					Change:     amount,
+				})...)
+			}
 		}
 	}
 

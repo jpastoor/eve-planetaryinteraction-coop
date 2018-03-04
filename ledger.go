@@ -6,31 +6,28 @@ type Ledger struct {
 	priceApi PriceAPI
 }
 
-func (l *Ledger) HandleUnlock(t Transaction, invMuts []InventoryMutation) ([]LedgerMutation, error) {
+func (l *Ledger) HandleMutations(debit []InventoryMutation, credit []InventoryMutation) ([]LedgerMutation, error) {
 	var lml []LedgerMutation
-	// Fetch the price of the type
-	price, err := l.priceApi.FetchPrice(*t.Type)
-	if err != nil {
-		return lml, fmt.Errorf("could not fetch price of %s: %s", t.Type.Name, err)
+
+	// Find all unique typeIds and their prices
+	typeIds := map[int]float32{}
+	for _, mut := range append(debit, credit...) {
+		if _, exists := typeIds[mut.TypeId]; !exists {
+			price, err := l.priceApi.FetchPrice(Type{TypeId: mut.TypeId})
+			if err != nil {
+				return lml, fmt.Errorf("could not fetch price of %d: %s", mut.TypeId, err)
+			}
+
+			typeIds[mut.TypeId] = price
+		}
 	}
 
-	// Debit mutation
-	lml = append(lml, LedgerMutation{
-		Transaction:   &t,
-		TransactionId: t.Id,
-		TypePrice:     price,
-		Change:        price * float32(t.Quantity),
-		PlayerName:    t.PlayerName,
-	})
-
-	// Credit mutations
-	for _, invMut := range invMuts {
+	for _, mut := range append(debit, credit...) {
+		price := typeIds[mut.TypeId]
 		lml = append(lml, LedgerMutation{
-			Transaction:   &t,
-			TransactionId: t.Id,
-			TypePrice:     price,
-			Change:        price * float32(invMut.Change),
-			PlayerName:    invMut.PlayerName,
+			TypePrice:  price,
+			Change:     price * float32(mut.Change),
+			PlayerName: mut.PlayerName,
 		})
 	}
 

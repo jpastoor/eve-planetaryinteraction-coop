@@ -49,8 +49,6 @@ type Type struct {
 
 type LedgerMutation struct {
 	gorm.Model
-	Transaction   *Transaction `gorm:"foreignkey:TransactionId"`
-	TransactionId string
 	TypePrice     float32
 	Change        float32
 	PlayerName    string

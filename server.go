@@ -41,7 +41,9 @@ func (s *Server) GetRoot(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) GetTransactions(w http.ResponseWriter, r *http.Request) {
 	var ts []Transaction
-	s.db.Find(&ts)
+
+	// TODO Why is WHO null here? fix earlier in the db call stuff
+	// TODO Why is Type null here? fix earlier in the db call stuff
 
 	bytes, err := json.Marshal(ts)
 	if err != nil {
@@ -72,7 +74,23 @@ func (s *Server) MarkTransactionForCorp(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *Server) GetInventory(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
+
+	var ts []Transaction
+	s.db.Find(&ts)
+
+	handler := &Handler{
+		inv:    NewInventory(),
+		ledger: NewLedger(&EveMarketerAPI{client: &http.Client{}}),
+	}
+
+	handler.Process(ts)
+
+	body, _ := json.Marshal(handler.inv.contents)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(body)
+}
+
+type GetInventoryRsp struct {
 }
 
 func (s *Server) GetLedger(w http.ResponseWriter, r *http.Request) {
@@ -86,10 +104,11 @@ func (s *Server) ResetLedger(w http.ResponseWriter, r *http.Request) {
 func (s *Server) parseLog(w http.ResponseWriter, r *http.Request) {
 
 	bytes, _ := ioutil.ReadAll(r.Body)
-	tp := NewTransactionParser()
+	tp := NewTransactionParser(NewDbTypeFetcher(s.db))
 	ts, errs := tp.Parse(string(bytes))
 
 	for _, t := range ts {
+		// TODO this call fails, i think when it tries to update/insert its associations (type most likely)
 		s.db.Create(t)
 	}
 

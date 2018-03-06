@@ -8,10 +8,13 @@ import (
 )
 
 type TransactionParser struct {
+	typeFetcher TypeFetcher
 }
 
-func NewTransactionParser() (TransactionParser) {
-	return TransactionParser{}
+func NewTransactionParser(typeFetcher TypeFetcher) (TransactionParser) {
+	return TransactionParser{
+		typeFetcher: typeFetcher,
+	}
 }
 
 func (tp *TransactionParser) Parse(input string) (ts []Transaction, errs []error) {
@@ -35,9 +38,9 @@ func (tp *TransactionParser) Parse(input string) (ts []Transaction, errs []error
 		action := tabs[4]
 		status := tabs[5]
 		typeName := tabs[6]
-
+		
 		// Skip some specific cases
-		if action == "Assembled" || action == "Set Name" || action == "Configure" || typeName == "Station Container" {
+		if action == "Assembled" || action == "Set TypeName" || action == "Configure" || typeName == "Station Container" {
 			continue
 		}
 
@@ -48,6 +51,12 @@ func (tp *TransactionParser) Parse(input string) (ts []Transaction, errs []error
 			continue
 		}
 
+		ty, err := tp.typeFetcher.getTypeByName(typeName)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("could not parse type on line %d: %s", i, err))
+			continue
+		}
+
 		tp := Transaction{
 			CreationDate: creationDate,
 			Location:     tabs[1],
@@ -55,7 +64,8 @@ func (tp *TransactionParser) Parse(input string) (ts []Transaction, errs []error
 			PlayerName:   tabs[3],
 			Action:       action,
 			Status:       status,
-			TypeName:     typeName,
+			Type:         ty,
+			TypeName:     ty.TypeName,
 			Quantity:     amount,
 		}
 

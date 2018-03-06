@@ -10,7 +10,7 @@ func TestEveMarketerAPI_FetchPrice(t *testing.T) {
 		client: &http.Client{},
 	}
 
-	price, err := api.FetchPrice(Type{TypeId: 3683})
+	price, err := api.FetchPrice(Type{TypeID: 3683})
 	if err != nil {
 		t.Fatalf("Did not expect an error, but got %s", err)
 	}

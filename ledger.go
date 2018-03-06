@@ -6,6 +6,10 @@ type Ledger struct {
 	priceApi PriceAPI
 }
 
+func NewLedger(priceApi PriceAPI) (*Ledger) {
+	return &Ledger{priceApi: priceApi}
+}
+
 func (l *Ledger) HandleMutations(debit []InventoryMutation, credit []InventoryMutation) ([]LedgerMutation, error) {
 	var lml []LedgerMutation
 
@@ -13,7 +17,7 @@ func (l *Ledger) HandleMutations(debit []InventoryMutation, credit []InventoryMu
 	typeIds := map[int]float32{}
 	for _, mut := range append(debit, credit...) {
 		if _, exists := typeIds[mut.TypeId]; !exists {
-			price, err := l.priceApi.FetchPrice(Type{TypeId: mut.TypeId})
+			price, err := l.priceApi.FetchPrice(Type{TypeID: mut.TypeId})
 			if err != nil {
 				return lml, fmt.Errorf("could not fetch price of %d: %s", mut.TypeId, err)
 			}

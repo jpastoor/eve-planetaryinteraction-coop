@@ -15,14 +15,12 @@ func TestHandler_Process(t *testing.T) {
 
 	h := Handler{
 		ledger: &Ledger{priceApi: &EveMarketerAPI{client: &http.Client{}}},
-		inv: &Inventory{
-			contents: make(map[int][]InventoryStack),
-		},
+		inv: NewInventory(),
 	}
 
 	typeOxygen := Type{
-		TypeId: 3683,
-		Name:   "Oxygen",
+		TypeID:   3683,
+		TypeName: "Oxygen",
 	}
 
 	playerGebbetje := Player{
@@ -42,7 +40,7 @@ func TestHandler_Process(t *testing.T) {
 			Id:         "1",
 			PlayerName: playerGebbetje.Name,
 			Who:        &playerGebbetje,
-			TypeName:   typeOxygen.Name,
+			TypeName:   typeOxygen.TypeName,
 			Type:       &typeOxygen,
 			Quantity:   1000,
 			Action:     ACTION_LOCK,
@@ -51,7 +49,7 @@ func TestHandler_Process(t *testing.T) {
 			Id:         "2",
 			PlayerName: playerEpicCyno.Name,
 			Who:        &playerEpicCyno,
-			TypeName:   typeOxygen.Name,
+			TypeName:   typeOxygen.TypeName,
 			Type:       &typeOxygen,
 			Quantity:   1000,
 			Action:     ACTION_LOCK,
@@ -60,7 +58,7 @@ func TestHandler_Process(t *testing.T) {
 			Id:         "3",
 			PlayerName: playerSwaffeltje.Name,
 			Who:        &playerSwaffeltje,
-			TypeName:   typeOxygen.Name,
+			TypeName:   typeOxygen.TypeName,
 			Type:       &typeOxygen,
 			Quantity:   1500,
 			Action:     ACTION_UNLOCK,
@@ -73,7 +71,7 @@ func TestHandler_Process(t *testing.T) {
 
 	// Make sure only EpicCyno has 500 left
 	expectedContents := map[int][]InventoryStack{
-		typeOxygen.TypeId: {
+		typeOxygen.TypeID: {
 			{PlayerName: playerEpicCyno.Name, Amount: 500},
 		},
 	}

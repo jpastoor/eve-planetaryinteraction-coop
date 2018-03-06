@@ -17,6 +17,9 @@ func main() {
 	dbConnStr := fmt.Sprintf("%s:%s@(%s)/%s?charset=utf8&parseTime=True&loc=Local", config.Db.User, config.Db.Password, config.Db.Host, config.Db.Name)
 
 	db := connectDb(dbConnStr)
+	// Enable Logger, show detailed log
+	db.LogMode(true)
+
 	defer db.Close()
 
 	db.AutoMigrate(&Transaction{}, &Type{}, &Player{}, &LedgerMutation{})

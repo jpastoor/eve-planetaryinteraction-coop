@@ -34,23 +34,15 @@ func (t Transaction) hash() string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-// TODO The whole alt and MarkedForCorp thing should be implemented in the logic still. Might be good to rewrite playerName in an early stage to corp or
-// TODO What does it break if transactions get marked for corp for our historic state in the inventory/ledger? Would it be good to make Mutation structs for that as well?
-
 type Player struct {
 	Name string `gorm:"type:varchar(100);PRIMARY_KEY"`
 	Main string
 }
 
-type Type struct {
-	TypeId int    `gorm:"PRIMARY_KEY"`
-	Name   string `gorm:"type:varchar(255);UNIQUE_KEY"`
-}
-
 type LedgerMutation struct {
 	gorm.Model
-	TypePrice     float32
-	Change        float32
-	PlayerName    string
-	Debited       bool
+	TypePrice  float32
+	Change     float32
+	PlayerName string
+	Debited    bool
 }

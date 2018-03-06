@@ -33,7 +33,7 @@ func (l *EveMarketerAPI) FetchPrice(ty Type) (float32, error) {
 	// TODO Add Caching
 	// TODO add grouping of typeIds in a single call
 
-	url := fmt.Sprintf("https://api.evemarketer.com/ec/marketstat/json?usesystem=30000142&typeid=%d", ty.TypeId)
+	url := fmt.Sprintf("https://api.evemarketer.com/ec/marketstat/json?usesystem=30000142&typeid=%d", ty.TypeID)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return 0, err

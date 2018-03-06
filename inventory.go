@@ -11,6 +11,12 @@ type Inventory struct {
 	contents map[int][]InventoryStack
 }
 
+func NewInventory() (*Inventory) {
+	return &Inventory{
+		contents: make(map[int][]InventoryStack),
+	}
+}
+
 type InventoryStack struct {
 	PlayerName string
 	Amount     int

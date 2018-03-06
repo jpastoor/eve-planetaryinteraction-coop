@@ -8,15 +8,6 @@ type Handler struct {
 /**
 TODO How to make sure transactions don't get double processed
  */
-/**
-TODO PRIO We need to make sure that unlocking/locking a stack does not necessarily change owernership. For instance if I want to take half of a stack, so unlock it, take partially, then relock the result.
-
-Maybe we need to rethink this altogether.
-
-Possible solutions
-- Fuzzy logic to cancel transactions or modify transactions when they happen close to eachother in time
-- (Easier) Maybe handle transactions in batch only, for instance per day, so you first calculate the netto add/take per person per type
- */
 func (h *Handler) Process(ts []Transaction) (invMuts []InventoryMutation, ledgerMuts []LedgerMutation, err error) {
 
 	// First we update the playerName of each transaction
@@ -33,20 +24,20 @@ func (h *Handler) Process(ts []Transaction) (invMuts []InventoryMutation, ledger
 	// Then we make a sum of all the item locks and unlocks per player
 	data := map[int]map[string]int{}
 	for _, t := range ts {
-		if _, exists := data[t.Type.TypeId]; !exists {
-			data[t.Type.TypeId] = map[string]int{}
+		if _, exists := data[t.Type.TypeID]; !exists {
+			data[t.Type.TypeID] = map[string]int{}
 		}
 
-		if _, exists := data[t.Type.TypeId][t.PlayerName]; !exists {
-			data[t.Type.TypeId][t.PlayerName] = 0
+		if _, exists := data[t.Type.TypeID][t.PlayerName]; !exists {
+			data[t.Type.TypeID][t.PlayerName] = 0
 		}
 
 		if t.Action == ACTION_LOCK {
-			data[t.Type.TypeId][t.PlayerName] += t.Quantity
+			data[t.Type.TypeID][t.PlayerName] += t.Quantity
 		}
 
 		if t.Action == ACTION_UNLOCK {
-			data[t.Type.TypeId][t.PlayerName] -= t.Quantity
+			data[t.Type.TypeID][t.PlayerName] -= t.Quantity
 		}
 	}
 

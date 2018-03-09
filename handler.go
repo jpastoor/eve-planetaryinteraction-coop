@@ -1,8 +1,10 @@
 package main
 
 type Handler struct {
-	inv    *Inventory
-	ledger *Ledger
+	inv           *Inventory
+	ledger        *Ledger
+	playerFetcher PlayerFetcher
+	typeFetcher   TypeFetcher
 }
 
 /**
@@ -10,34 +12,44 @@ TODO How to make sure transactions don't get double processed
  */
 func (h *Handler) Process(ts []Transaction) (invMuts []InventoryMutation, ledgerMuts []LedgerMutation, err error) {
 
-	// First we update the playerName of each transaction
+
+	data := map[int]map[string]int{}
 	for _, t := range ts {
-		if t.Who.Main != "" {
-			t.PlayerName = t.Who.Main
+
+		// First we update the playerName of each transaction
+		who, err := h.playerFetcher.getOrCreatePlayerByName(t.PlayerName)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		if who.Main != "" {
+			t.PlayerName = who.Main
 		}
 
 		if t.MarkedForCorp {
 			t.PlayerName = "ADHC"
 		}
-	}
 
-	// Then we make a sum of all the item locks and unlocks per player
-	data := map[int]map[string]int{}
-	for _, t := range ts {
-		if _, exists := data[t.Type.TypeID]; !exists {
-			data[t.Type.TypeID] = map[string]int{}
+		// Then we make a sum of all the item locks and unlocks per player
+		transType, err := h.typeFetcher.getTypeByName(t.TypeName)
+		if err != nil {
+			return nil, nil, err
 		}
 
-		if _, exists := data[t.Type.TypeID][t.PlayerName]; !exists {
-			data[t.Type.TypeID][t.PlayerName] = 0
+		if _, exists := data[transType.TypeID]; !exists {
+			data[transType.TypeID] = map[string]int{}
+		}
+
+		if _, exists := data[transType.TypeID][t.PlayerName]; !exists {
+			data[transType.TypeID][t.PlayerName] = 0
 		}
 
 		if t.Action == ACTION_LOCK {
-			data[t.Type.TypeID][t.PlayerName] += t.Quantity
+			data[transType.TypeID][t.PlayerName] += t.Quantity
 		}
 
 		if t.Action == ACTION_UNLOCK {
-			data[t.Type.TypeID][t.PlayerName] -= t.Quantity
+			data[transType.TypeID][t.PlayerName] -= t.Quantity
 		}
 	}
 

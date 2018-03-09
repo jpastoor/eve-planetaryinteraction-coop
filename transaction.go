@@ -14,11 +14,9 @@ type Transaction struct {
 	CreationDate  time.Time
 	Location      string
 	SubLocation   string
-	Who           *Player `gorm:"foreignkey:PlayerName"`
 	PlayerName    string
 	Action        string
 	Status        string
-	Type          *Type   `gorm:"foreignkey:TypeName"`
 	TypeName      string
 	Quantity      int
 	MarkedForCorp bool
@@ -34,10 +32,6 @@ func (t Transaction) hash() string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-type Player struct {
-	Name string `gorm:"type:varchar(100);PRIMARY_KEY"`
-	Main string
-}
 
 type LedgerMutation struct {
 	gorm.Model

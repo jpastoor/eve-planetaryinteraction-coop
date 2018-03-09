@@ -30,6 +30,7 @@ func NewServer(r *mux.Router, db *gorm.DB) (*Server) {
 	r.HandleFunc("/inventory", s.GetInventory).Methods(http.MethodGet)
 	r.HandleFunc("/ledger", s.GetLedger).Methods(http.MethodGet)
 	r.HandleFunc("/ledger/reset", s.ResetLedger).Methods(http.MethodPost)
+	r.HandleFunc("/players/{playerName}", s.UpdatePlayer).Methods(http.MethodPut)
 
 	return s
 }
@@ -41,9 +42,6 @@ func (s *Server) GetRoot(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) GetTransactions(w http.ResponseWriter, r *http.Request) {
 	var ts []Transaction
-
-	// TODO Why is WHO null here? fix earlier in the db call stuff
-	// TODO Why is Type null here? fix earlier in the db call stuff
 
 	bytes, err := json.Marshal(ts)
 	if err != nil {
@@ -73,14 +71,20 @@ func (s *Server) MarkTransactionForCorp(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNoContent)
 }
 
+func (s *Server) UpdatePlayer(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 func (s *Server) GetInventory(w http.ResponseWriter, r *http.Request) {
 
 	var ts []Transaction
 	s.db.Find(&ts)
 
 	handler := &Handler{
-		inv:    NewInventory(),
-		ledger: NewLedger(&EveMarketerAPI{client: &http.Client{}}),
+		inv:           NewInventory(),
+		ledger:        NewLedger(&EveMarketerAPI{client: &http.Client{}}),
+		typeFetcher:   NewDbTypeFetcher(s.db),
+		playerFetcher: NewDbPlayerFetcher(s.db),
 	}
 
 	handler.Process(ts)

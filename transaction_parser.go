@@ -40,7 +40,7 @@ func (tp *TransactionParser) Parse(input string) (ts []Transaction, errs []error
 		typeName := tabs[6]
 		
 		// Skip some specific cases
-		if action == "Assembled" || action == "Set TypeName" || action == "Configure" || typeName == "Station Container" {
+		if action == "Assembled" || action == "Set Name" || action == "Configure" || typeName == "Station Container" || typeName == "Station Vault Container" {
 			continue
 		}
 
@@ -64,7 +64,6 @@ func (tp *TransactionParser) Parse(input string) (ts []Transaction, errs []error
 			PlayerName:   tabs[3],
 			Action:       action,
 			Status:       status,
-			Type:         ty,
 			TypeName:     ty.TypeName,
 			Quantity:     amount,
 		}

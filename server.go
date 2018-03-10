@@ -36,8 +36,13 @@ func NewServer(r *mux.Router, db *gorm.DB) (*Server) {
 }
 
 func (s *Server) GetRoot(w http.ResponseWriter, r *http.Request) {
+
+	t := Transaction{}
+	s.db.Order("creation_date DESC").First(&t)
+
 	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte("Server is working"))
+	output := fmt.Sprintf("Server is working. Last log is from: %s (%s - %s %dx %s)", t.CreationDate, t.PlayerName, t.Action, t.Quantity, t.TypeName)
+	w.Write([]byte(output))
 }
 
 func (s *Server) GetTransactions(w http.ResponseWriter, r *http.Request) {
@@ -89,12 +94,27 @@ func (s *Server) GetInventory(w http.ResponseWriter, r *http.Request) {
 
 	handler.Process(ts)
 
-	body, _ := json.Marshal(handler.inv.contents)
+	var rsp []GetInventoryRspItem
+
+	for typeId, contents := range handler.inv.contents {
+		ty, _ := handler.typeFetcher.getTypeById(typeId)
+
+		rsp = append(rsp, GetInventoryRspItem{
+			TypeId:   typeId,
+			TypeName: ty.TypeName,
+			Stacks:   contents,
+		})
+	}
+
+	body, _ := json.Marshal(rsp)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
 }
 
-type GetInventoryRsp struct {
+type GetInventoryRspItem struct {
+	TypeId   int
+	TypeName string
+	Stacks   []InventoryStack
 }
 
 func (s *Server) GetLedger(w http.ResponseWriter, r *http.Request) {

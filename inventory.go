@@ -25,6 +25,7 @@ type InventoryStack struct {
 type InventoryMutation struct {
 	TypeId     int
 	PlayerName string
+	TypeName   string
 	Change     int
 }
 

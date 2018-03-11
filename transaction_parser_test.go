@@ -7,7 +7,7 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	tp := NewTransactionParser()
+	tp := NewTransactionParser(NewDbTypeFetcher(nil))
 	file, _ := ioutil.ReadFile("./examples/example_log.log")
 	output, errs := tp.Parse(string(file))
 

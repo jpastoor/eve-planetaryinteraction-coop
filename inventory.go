@@ -25,7 +25,6 @@ type InventoryStack struct {
 type InventoryMutation struct {
 	TypeId     int
 	PlayerName string
-	TypeName   string
 	Change     int
 }
 
@@ -41,16 +40,14 @@ func (inv *Inventory) Add(im InventoryMutation) {
 	})
 }
 
-func (inv *Inventory) Sub(im InventoryMutation) ([]InventoryMutation) {
+func (inv *Inventory) Sub(im InventoryMutation) (creditMuts []InventoryMutation, debitMuts []InventoryMutation) {
 	amountLeft := im.Change * -1
 
 	stacks := inv.contents[im.TypeId]
 	var newStacks []InventoryStack
 
-	var mutationsForLedger []InventoryMutation
-
 	for _, stack := range stacks {
-		if amountLeft > 0 && stack.PlayerName == im.PlayerName {
+		if amountLeft > 0 {
 			var fetchAmount int
 			// Stack is bigger than what we need, we do a partial take
 			if stack.Amount > amountLeft {
@@ -63,10 +60,16 @@ func (inv *Inventory) Sub(im InventoryMutation) ([]InventoryMutation) {
 			stack.Amount -= fetchAmount
 			amountLeft -= fetchAmount
 
-			mutationsForLedger = append(mutationsForLedger, InventoryMutation{
+			creditMuts = append(creditMuts, InventoryMutation{
 				Change:     fetchAmount,
 				TypeId:     im.TypeId,
 				PlayerName: stack.PlayerName,
+			})
+
+			debitMuts = append(debitMuts, InventoryMutation{
+				Change:     fetchAmount * -1,
+				TypeId:     im.TypeId,
+				PlayerName: im.PlayerName,
 			})
 		}
 
@@ -78,5 +81,5 @@ func (inv *Inventory) Sub(im InventoryMutation) ([]InventoryMutation) {
 
 	inv.contents[im.TypeId] = newStacks
 
-	return mutationsForLedger
+	return creditMuts, debitMuts
 }

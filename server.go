@@ -92,23 +92,36 @@ func (s *Server) GetInventory(w http.ResponseWriter, r *http.Request) {
 		playerFetcher: NewDbPlayerFetcher(s.db),
 	}
 
-	handler.Process(ts)
+	creditMuts, debitMuts, err := handler.Process(ts)
+	if err != nil {
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusBadGateway)
+		w.Write([]byte(err.Error()))
+	}
 
-	var rsp []GetInventoryRspItem
+	var inv []GetInventoryRspItem
 
 	for typeId, contents := range handler.inv.contents {
 		ty, _ := handler.typeFetcher.getTypeById(typeId)
 
-		rsp = append(rsp, GetInventoryRspItem{
+		inv = append(inv, GetInventoryRspItem{
 			TypeId:   typeId,
 			TypeName: ty.TypeName,
 			Stacks:   contents,
 		})
 	}
 
-	body, _ := json.Marshal(rsp)
+	body, _ := json.Marshal(&GetInventoryRsp{
+		Inventory: inv,
+		Mutations: append(creditMuts, debitMuts...),
+	})
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
+}
+
+type GetInventoryRsp struct {
+	Inventory []GetInventoryRspItem
+	Mutations []InventoryMutation
 }
 
 type GetInventoryRspItem struct {
@@ -118,7 +131,28 @@ type GetInventoryRspItem struct {
 }
 
 func (s *Server) GetLedger(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
+	var ts []Transaction
+	s.db.Find(&ts)
+
+	handler := &Handler{
+		inv:           NewInventory(),
+		ledger:        NewLedger(&EveMarketerAPI{client: &http.Client{}}),
+		typeFetcher:   NewDbTypeFetcher(s.db),
+		playerFetcher: NewDbPlayerFetcher(s.db),
+	}
+
+	creditMuts, debitMuts, err := handler.Process(ts)
+
+	mutations, err := handler.ledger.HandleMutations(debitMuts, creditMuts)
+	if err != nil {
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusBadGateway)
+		w.Write([]byte(err.Error()))
+	}
+
+	body, _ := json.Marshal(&mutations)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(body)
 }
 
 func (s *Server) ResetLedger(w http.ResponseWriter, r *http.Request) {
@@ -132,12 +166,20 @@ func (s *Server) parseLog(w http.ResponseWriter, r *http.Request) {
 	ts, errs := tp.Parse(string(bytes))
 
 	for _, t := range ts {
-		// TODO this call fails, i think when it tries to update/insert its associations (type most likely)
 		s.db.Create(t)
 	}
 
-	fmt.Print(ts)
-	fmt.Print(errs)
+	w.WriteHeader(http.StatusNoContent)
+	body, _ := json.Marshal(&ParseLogRsp{
+		Errors:       errs,
+		Transactions: ts,
+	})
 
-	// TODO Add response
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(body)
+}
+
+type ParseLogRsp struct {
+	Transactions []Transaction
+	Errors       []error
 }

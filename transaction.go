@@ -10,7 +10,7 @@ import (
 )
 
 type Transaction struct {
-	Id            string  `gorm:"PRIMARY_KEY"`
+	Id            string `gorm:"PRIMARY_KEY"`
 	CreationDate  time.Time
 	Location      string
 	SubLocation   string
@@ -32,9 +32,9 @@ func (t Transaction) hash() string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-
 type LedgerMutation struct {
 	gorm.Model
+	TypeId     int
 	TypePrice  float32
 	Change     float32
 	PlayerName string

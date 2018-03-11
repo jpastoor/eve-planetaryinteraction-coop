@@ -7,11 +7,7 @@ type Handler struct {
 	typeFetcher   TypeFetcher
 }
 
-/**
-TODO How to make sure transactions don't get double processed
- */
-func (h *Handler) Process(ts []Transaction) (invMuts []InventoryMutation, ledgerMuts []LedgerMutation, err error) {
-
+func (h *Handler) Process(ts []Transaction) (invCreditMuts []InventoryMutation, invDebitMuts []InventoryMutation,  err error) {
 
 	data := map[int]map[string]int{}
 	for _, t := range ts {
@@ -33,7 +29,7 @@ func (h *Handler) Process(ts []Transaction) (invMuts []InventoryMutation, ledger
 		// Then we make a sum of all the item locks and unlocks per player
 		transType, err := h.typeFetcher.getTypeByName(t.TypeName)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil,err
 		}
 
 		if _, exists := data[transType.TypeID]; !exists {
@@ -67,7 +63,6 @@ func (h *Handler) Process(ts []Transaction) (invMuts []InventoryMutation, ledger
 				}
 
 				h.inv.Add(invMut)
-				debitMutations = append(debitMutations, invMut)
 			}
 		}
 	}
@@ -76,14 +71,18 @@ func (h *Handler) Process(ts []Transaction) (invMuts []InventoryMutation, ledger
 	for typeId, playerMap := range data {
 		for playerName, amount := range playerMap {
 			if amount < 0 {
-				creditMutations = append(creditMutations, h.inv.Sub(InventoryMutation{
+				invMut := InventoryMutation{
 					PlayerName: playerName,
 					TypeId:     typeId,
 					Change:     amount,
-				})...)
+				}
+
+				nCreditMuts, nDebitMuts := h.inv.Sub(invMut)
+				creditMutations = append(creditMutations, nCreditMuts...)
+				debitMutations = append(debitMutations, nDebitMuts...)
 			}
 		}
 	}
 
-	return invMuts, ledgerMuts, nil
+	return creditMutations, debitMutations, nil
 }

@@ -15,17 +15,17 @@
         "hours": 24,
         "minq": 1
       },
-      "volume": 9707289,
-      "wavg": 307.57,
-      "avg": 325.03,
-      "variance": 1377.38,
-      "stdDev": 37.11,
-      "median": 326.61,
-      "fivePercent": 347.10,
-      "max": 347.10,
+      "volume": 7333289,
+      "wavg": 305.87,
+      "avg": 334.38,
+      "variance": 3387.51,
+      "stdDev": 58.20,
+      "median": 303.39,
+      "fivePercent": 382.40,
+      "max": 382.42,
       "min": 170.00,
       "highToLow": true,
-      "generated": 1520151194899
+      "generated": 1520709298436
     },
     "sell": {
       "forQuery": {
@@ -42,17 +42,17 @@
         "hours": 24,
         "minq": 1
       },
-      "volume": 5976669,
-      "wavg": 519.01,
-      "avg": 522.67,
-      "variance": 13014.50,
-      "stdDev": 114.08,
-      "median": 499.99,
-      "fivePercent": 449.70,
+      "volume": 9537010,
+      "wavg": 484.00,
+      "avg": 474.84,
+      "variance": 10172.42,
+      "stdDev": 100.86,
+      "median": 445.47,
+      "fivePercent": 423.02,
       "max": 796.87,
-      "min": 449.70,
+      "min": 422.89,
       "highToLow": false,
-      "generated": 1520151194899
+      "generated": 1520709298436
     }
   },
   {
@@ -71,17 +71,17 @@
         "hours": 24,
         "minq": 1
       },
-      "volume": 10601111,
-      "wavg": 307.15,
-      "avg": 315.63,
-      "variance": 492.13,
-      "stdDev": 22.18,
-      "median": 305.00,
-      "fivePercent": 332.57,
-      "max": 332.57,
-      "min": 271.00,
+      "volume": 9001111,
+      "wavg": 297.53,
+      "avg": 294.17,
+      "variance": 5095.68,
+      "stdDev": 71.38,
+      "median": 301.23,
+      "fivePercent": 333.05,
+      "max": 333.11,
+      "min": 100.01,
       "highToLow": true,
-      "generated": 1520148603787
+      "generated": 1520706359685
     },
     "sell": {
       "forQuery": {
@@ -98,17 +98,17 @@
         "hours": 24,
         "minq": 1
       },
-      "volume": 24041013,
-      "wavg": 475.49,
-      "avg": 440.25,
-      "variance": 19115.48,
-      "stdDev": 138.26,
-      "median": 413.49,
-      "fivePercent": 354.51,
+      "volume": 20219255,
+      "wavg": 490.45,
+      "avg": 457.36,
+      "variance": 21849.67,
+      "stdDev": 147.82,
+      "median": 454.95,
+      "fivePercent": 374.13,
       "max": 999.97,
-      "min": 353.99,
+      "min": 369.33,
       "highToLow": false,
-      "generated": 1520148603787
+      "generated": 1520706359685
     }
   }
 ]

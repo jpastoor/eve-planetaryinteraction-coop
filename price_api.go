@@ -5,14 +5,17 @@ import (
 	"fmt"
 	"encoding/json"
 	"io/ioutil"
+	"strings"
+	"strconv"
 )
 
 type PriceAPI interface {
-	FetchPrice(ty Type) (float32, error)
+	FetchPrices(typeIds []int) (map[int]float32, error)
 }
 
 type EveMarketerAPI struct {
 	client *http.Client
+	cache  map[int]float32
 }
 
 type EveMarketerRsp []EveMarketerRspType
@@ -23,36 +26,60 @@ type EveMarketerRspType struct {
 }
 
 type EveMarketerRspTypeStat struct {
-	FivePercent float32 `json:"fivePercent"`
+	ForQuery    EveMarketerRspForQuery `json:"forQuery"`
+	FivePercent float32                `json:"fivePercent"`
+}
+
+type EveMarketerRspForQuery struct {
+	Types []int `json:"types"`
 }
 
 /**
 Currently fetches the Buy 5% price
  */
-func (l *EveMarketerAPI) FetchPrice(ty Type) (float32, error) {
-	// TODO Add Caching
-	// TODO add grouping of typeIds in a single call
+func (l *EveMarketerAPI) FetchPrices(typeIds []int) (map[int]float32, error) {
+	output := make(map[int]float32)
 
-	url := fmt.Sprintf("https://api.evemarketer.com/ec/marketstat/json?usesystem=30000142&typeid=%d", ty.TypeID)
+	var typeIdsStr []string
+	for _, typeID := range typeIds {
+		// If we have a cache
+		if price, exists := l.cache[typeID]; exists {
+			output[typeID] = price
+		} else {
+			// When there is no cache, add it to the lists of types to fetch
+			typeIdsStr = append(typeIdsStr, strconv.Itoa(typeID))
+		}
+	}
+
+	url := fmt.Sprintf("https://api.evemarketer.com/ec/marketstat/json?usesystem=30000142&typeid=%s", strings.Join(typeIdsStr, ","))
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return 0, err
+		return output, err
 	}
 
 	rsp, err := l.client.Do(req)
 	if err != nil {
-		return 0, err
+		return output, err
+	}
+
+	if rsp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Error while fetching price API [%d] %s on URL %s", rsp.StatusCode, rsp.Status, url)
 	}
 
 	body, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {
-		return 0, err
+		return output, err
 	}
 
 	parsedRsp := EveMarketerRsp{}
 	if err := json.Unmarshal(body, &parsedRsp); err != nil {
-		return 0, err
+		return output, err
 	}
 
-	return parsedRsp[0].Buy.FivePercent, nil
+	for _, typeStat := range parsedRsp {
+		typeId := typeStat.Buy.ForQuery.Types[0]
+		output[typeId] = typeStat.Buy.FivePercent
+	}
+
+	return output, nil
 }

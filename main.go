@@ -17,11 +17,11 @@ func main() {
 	dbConnStr := fmt.Sprintf("%s:%s@(%s)/%s?charset=utf8&parseTime=True&loc=Local", config.Db.User, config.Db.Password, config.Db.Host, config.Db.Name)
 
 	db := connectDb(dbConnStr)
-	//db.LogMode(true)
+	db.LogMode(true)
 
 	defer db.Close()
 
-	db.AutoMigrate(&Transaction{}, &Type{}, &Player{}, &LedgerMutation{})
+	db.AutoMigrate(&Transaction{}, &Type{}, &Player{}, &LedgerState{}, &InventoryState{}, &Commit{})
 
 	r := mux.NewRouter()
 

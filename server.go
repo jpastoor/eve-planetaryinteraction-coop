@@ -29,7 +29,8 @@ func NewServer(r *mux.Router, db *gorm.DB) (*Server) {
 	r.HandleFunc("/transactions/{transactionId}/markForCorp", s.MarkTransactionForCorp).Methods(http.MethodPost)
 	r.HandleFunc("/inventory", s.GetInventory).Methods(http.MethodGet)
 	r.HandleFunc("/ledger", s.GetLedger).Methods(http.MethodGet)
-	r.HandleFunc("/ledger/reset", s.ResetLedger).Methods(http.MethodPost)
+	r.HandleFunc("/commits", s.Commit).Methods(http.MethodPost)
+	r.HandleFunc("/commits/{commitId}/rollback", s.RollbackCommit).Methods(http.MethodPost)
 	r.HandleFunc("/players/{playerName}", s.UpdatePlayer).Methods(http.MethodPut)
 
 	return s
@@ -84,6 +85,7 @@ func (s *Server) GetInventory(w http.ResponseWriter, r *http.Request) {
 
 	var ts []Transaction
 	s.db.Find(&ts)
+	// TODO Filter only on the unprocessed transactions here
 
 	handler := &Handler{
 		inv:           NewInventory(),
@@ -133,6 +135,7 @@ type GetInventoryRspItem struct {
 func (s *Server) GetLedger(w http.ResponseWriter, r *http.Request) {
 	var ts []Transaction
 	s.db.Find(&ts)
+	// TODO Filter only on the unprocessed transactions here
 
 	handler := &Handler{
 		inv:           NewInventory(),
@@ -155,8 +158,34 @@ func (s *Server) GetLedger(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 }
 
-func (s *Server) ResetLedger(w http.ResponseWriter, r *http.Request) {
+func (s *Server) RollbackCommit(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
+}
+
+func (s *Server) Commit(w http.ResponseWriter, r *http.Request) {
+
+	// TODO There is quite some duplication between this, GetLedger and GetInventory
+	/**
+
+So when the payout happens we want to
+- Fetch all transactions that have not been processed
+- Calculate and store new inventory state
+- Calculate per person a bill
+- Store that bill for future reference
+- Mark transactions as processed
+
+	So in short we want to do a GetLedger, then store the results under a Commit with a CommitId so we can rollback if needed.
+
+	 */
+
+	commit := Commit{}
+	s.db.Create(&commit)
+
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+type Commit struct {
+	gorm.Model
 }
 
 func (s *Server) parseLog(w http.ResponseWriter, r *http.Request) {

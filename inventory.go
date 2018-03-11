@@ -12,6 +12,9 @@ type Inventory struct {
 }
 
 func NewInventory() (*Inventory) {
+
+	// TODO Read from the InventoryState table and prefill
+
 	return &Inventory{
 		contents: make(map[int][]InventoryStack),
 	}
@@ -19,6 +22,16 @@ func NewInventory() (*Inventory) {
 
 type InventoryStack struct {
 	PlayerName string
+	Amount     int
+}
+
+/**
+This type will be persisted in the database at every commit
+ */
+type InventoryState struct {
+	CommitId   int    `gorm:"primary_key auto_increment=false"`
+	TypeId     int    `gorm:"primary_key auto_increment=false"`
+	PlayerName string `gorm:"primary_key auto_increment=false"`
 	Amount     int
 }
 

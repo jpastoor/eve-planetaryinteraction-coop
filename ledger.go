@@ -4,6 +4,24 @@ type Ledger struct {
 	priceApi PriceAPI
 }
 
+type LedgerMutation struct {
+	TypeId     int
+	TypePrice  float32
+	Change     float32
+	PlayerName string
+}
+
+/**
+This type will be persisted in the database at every commit
+ */
+type LedgerState struct {
+	CommitId   int    `gorm:"primary_key auto_increment=false"`
+	TypeId     int    `gorm:"primary_key auto_increment=false"`
+	PlayerName string `gorm:"primary_key auto_increment=false"`
+	TypePrice  float32
+	Change     float32
+}
+
 func NewLedger(priceApi PriceAPI) (*Ledger) {
 	return &Ledger{priceApi: priceApi}
 }

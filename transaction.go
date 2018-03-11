@@ -6,20 +6,20 @@ import (
 	"io"
 	"fmt"
 	"encoding/hex"
-	"github.com/jinzhu/gorm"
 )
 
 type Transaction struct {
-	Id            string `gorm:"PRIMARY_KEY"`
-	CreationDate  time.Time
-	Location      string
-	SubLocation   string
-	PlayerName    string
-	Action        string
-	Status        string
-	TypeName      string
-	Quantity      int
-	MarkedForCorp bool
+	Id                string `gorm:"PRIMARY_KEY"`
+	CreationDate      time.Time
+	Location          string
+	SubLocation       string
+	PlayerName        string
+	Action            string
+	Status            string
+	TypeName          string
+	Quantity          int
+	MarkedForCorp     bool
+	ProcessedInCommit int // TODO Get a proper int or NULL in here
 }
 
 const ACTION_UNLOCK = "Unlock"
@@ -30,13 +30,4 @@ func (t Transaction) hash() string {
 	hasher := md5.New()
 	io.WriteString(hasher, input)
 	return hex.EncodeToString(hasher.Sum(nil))
-}
-
-type LedgerMutation struct {
-	gorm.Model
-	TypeId     int
-	TypePrice  float32
-	Change     float32
-	PlayerName string
-	Debited    bool
 }

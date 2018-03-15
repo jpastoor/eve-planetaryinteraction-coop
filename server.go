@@ -46,8 +46,12 @@ func (s *Server) GetRoot(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(output))
 }
 
+/**
+Fetches a list of uncommitted transactions
+ */
 func (s *Server) GetTransactions(w http.ResponseWriter, r *http.Request) {
 	var ts []Transaction
+	s.db.Order("creation_date DESC").Find(&ts)
 
 	bytes, err := json.Marshal(ts)
 	if err != nil {
@@ -84,8 +88,7 @@ func (s *Server) UpdatePlayer(w http.ResponseWriter, r *http.Request) {
 func (s *Server) GetInventory(w http.ResponseWriter, r *http.Request) {
 
 	var ts []Transaction
-	s.db.Find(&ts)
-	// TODO Filter only on the unprocessed transactions here
+	s.db.Order("creation_date ASC").Find(&ts)
 
 	handler := &Handler{
 		inv:           NewInventory(),
@@ -134,8 +137,7 @@ type GetInventoryRspItem struct {
 
 func (s *Server) GetLedger(w http.ResponseWriter, r *http.Request) {
 	var ts []Transaction
-	s.db.Find(&ts)
-	// TODO Filter only on the unprocessed transactions here
+	s.db.Order("creation_date ASC").Find(&ts)
 
 	handler := &Handler{
 		inv:           NewInventory(),
@@ -147,15 +149,50 @@ func (s *Server) GetLedger(w http.ResponseWriter, r *http.Request) {
 	creditMuts, debitMuts, err := handler.Process(ts)
 
 	mutations, err := handler.ledger.HandleMutations(debitMuts, creditMuts)
+
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusBadGateway)
 		w.Write([]byte(err.Error()))
 	}
 
-	body, _ := json.Marshal(&mutations)
+	// TODO SOMETHING SOMETHING HAPPENS HERE MAKING OUTCOMES VARIABLE??? Ordering?
+
+	ledgerByPlayer := make(map[string]GetLedgerRspItem)
+	for _, mutation := range mutations {
+		if _, exists := ledgerByPlayer[mutation.PlayerName]; !exists {
+			ledgerByPlayer[mutation.PlayerName] = GetLedgerRspItem{
+				PlayerName: mutation.PlayerName,
+				Amount:     float64(mutation.Change),
+			}
+		} else {
+			item := ledgerByPlayer[mutation.PlayerName]
+			item.Amount +=  float64(mutation.Change)
+		}
+	}
+
+	ledgerSummary := []GetLedgerRspItem{}
+	for _, ledgerRspItem := range ledgerByPlayer {
+		ledgerSummary = append(ledgerSummary, ledgerRspItem)
+	}
+
+	body, _ := json.Marshal(&GetLedgerRsp{
+		Ledger:    ledgerSummary,
+		Mutations: mutations,
+	})
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
+}
+
+type GetLedgerRspItem struct {
+	PlayerName string
+	Amount     float64
+}
+
+type GetLedgerRsp struct {
+	Ledger    []GetLedgerRspItem
+	Mutations []LedgerMutation
 }
 
 func (s *Server) RollbackCommit(w http.ResponseWriter, r *http.Request) {
@@ -177,6 +214,8 @@ So when the payout happens we want to
 	So in short we want to do a GetLedger, then store the results under a Commit with a CommitId so we can rollback if needed.
 
 	 */
+	var ts []Transaction
+	s.db.Where("processed_in_commit IS null").Find(&ts)
 
 	commit := Commit{}
 	s.db.Create(&commit)

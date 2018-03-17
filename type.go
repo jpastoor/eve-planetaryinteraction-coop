@@ -1,6 +1,9 @@
 package main
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+	"fmt"
+)
 
 
 type Type struct {
@@ -63,7 +66,32 @@ func (tf *DbTypeFetcher) getTypeByName(typeName string) (*Type, error) {
 		tf.cacheByName[typeName] = ty
 	}
 
+	return ty, nil
+}
 
+type TypeFetcherMock struct {
+	cacheById   map[int]*Type
+	cacheByName map[string]*Type
+}
+
+func (tf *TypeFetcherMock) getTypeByName(typeName string) (*Type, error) {
+	ty, exists := tf.cacheByName[typeName]
+
+	if !exists {
+		return nil, fmt.Errorf("Type %s not found", typeName)
+	}
+
+	return ty, nil
+}
+
+func (tf *TypeFetcherMock) getTypeById(typeId int) (*Type, error) {
+	ty, exists := tf.cacheById[typeId]
+
+	if !exists {
+		return nil, fmt.Errorf("Type %d not found", typeId)
+	}
+
+	tf.cacheById[typeId] = ty
 
 	return ty, nil
 }

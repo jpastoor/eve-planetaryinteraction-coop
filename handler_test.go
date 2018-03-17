@@ -6,54 +6,47 @@ import (
 	"reflect"
 )
 
-/**
-This acts as a sort of integration test since a lot of the handle functionality in the ledger and inventory classes
-is tested by this as well. We add 2 stacks to the inventory (total 2000 and then remove 1500 from it, so we have a
-removed and a partial stack left).
- */
 func TestHandler_Process(t *testing.T) {
 
 	h := Handler{
 		ledger: &Ledger{priceApi: &EveMarketerAPI{client: &http.Client{}}},
-		inv: NewInventory(),
+		inv:    NewInventory(),
+		playerFetcher: &DbPlayerFetcherMock{
+			cacheByName: map[string]*Player{
+				"TestMain":  {Name: "TestMain"},
+				"TestAlt":   {Name: "TestAlt", Main: "TestMain"},
+				"TestOther": {Name: "TestOther"},
+			},
+		},
+		typeFetcher: &TypeFetcherMock{
+			cacheByName: map[string]*Type{
+				"Oxygen": {
+					TypeID:   3683,
+					TypeName: "Oxygen",
+				},
+			},
+		},
 	}
 
-	typeOxygen := Type{
-		TypeID:   3683,
-		TypeName: "Oxygen",
-	}
-
-	playerGebbetje := Player{
-		Name: "Gebbetje",
-	}
-
-	playerSwaffeltje := Player{
-		Name: "Swaffeltje",
-	}
-
-	playerEpicCyno := Player{
-		Name: "EpicCyno",
-	}
-
-	invMuts, ledgerMuts, err := h.Process([]Transaction{
+	creditMuts, debitMuts, err := h.Process([]Transaction{
 		{
 			Id:         "1",
-			PlayerName: playerGebbetje.Name,
-			TypeName:   typeOxygen.TypeName,
+			PlayerName: "TestMain",
+			TypeName:   "Oxygen",
 			Quantity:   1000,
 			Action:     ACTION_LOCK,
 		},
 		{
 			Id:         "2",
-			PlayerName: playerEpicCyno.Name,
-			TypeName:   typeOxygen.TypeName,
+			PlayerName: "TestOther",
+			TypeName:   "Oxygen",
 			Quantity:   1000,
 			Action:     ACTION_LOCK,
 		},
 		{
 			Id:         "3",
-			PlayerName: playerSwaffeltje.Name,
-			TypeName:   typeOxygen.TypeName,
+			PlayerName: "TestAlt",
+			TypeName:   "Oxygen",
 			Quantity:   1500,
 			Action:     ACTION_UNLOCK,
 		},
@@ -65,8 +58,8 @@ func TestHandler_Process(t *testing.T) {
 
 	// Make sure only EpicCyno has 500 left
 	expectedContents := map[int][]InventoryStack{
-		typeOxygen.TypeID: {
-			{PlayerName: playerEpicCyno.Name, Amount: 500},
+		3683: {
+			{PlayerName: "TestOther", Amount: 500},
 		},
 	}
 
@@ -74,11 +67,11 @@ func TestHandler_Process(t *testing.T) {
 		t.Fatalf("Expected %v, but got %v", expectedContents, h.inv.contents)
 	}
 
-	if len(ledgerMuts) != 3 {
-		t.Fatalf("Expected %d ledger mutations, but got %d", 3, len(ledgerMuts))
+	if len(debitMuts) != 1 {
+		t.Fatalf("Expected %d ledger mutations, but got %d", 1, len(debitMuts))
 	}
 
-	if len(invMuts) != 4 {
-		t.Fatalf("Expected %d inventory mutations, but got %d", 4, len(invMuts))
+	if len(creditMuts) != 1 {
+		t.Fatalf("Expected %d inventory mutations, but got %d", 1, len(creditMuts))
 	}
 }

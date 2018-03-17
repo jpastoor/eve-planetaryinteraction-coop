@@ -10,17 +10,26 @@ import (
 )
 
 type Server struct {
-	http *http.Client
-	r    *mux.Router
-	db   *gorm.DB
+	http    *http.Client
+	r       *mux.Router
+	db      *gorm.DB
+	handler *Handler
 }
 
 func NewServer(r *mux.Router, db *gorm.DB) (*Server) {
 
+	handler := &Handler{
+		inv:           NewInventory(),
+		ledger:        NewLedger(&EveMarketerAPI{client: &http.Client{}}),
+		typeFetcher:   NewDbTypeFetcher(db),
+		playerFetcher: NewDbPlayerFetcher(db),
+	}
+
 	s := &Server{
-		http: &http.Client{},
-		r:    r,
-		db:   db,
+		http:    &http.Client{},
+		r:       r,
+		db:      db,
+		handler: handler,
 	}
 
 	r.HandleFunc("/", s.GetRoot).Methods(http.MethodGet)
@@ -63,6 +72,9 @@ func (s *Server) GetTransactions(w http.ResponseWriter, r *http.Request) {
 	w.Write(bytes)
 }
 
+/**
+Marking transactions for corp changes the playerName of the transaction at runtime to ADHC
+ */
 func (s *Server) MarkTransactionForCorp(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
@@ -90,14 +102,7 @@ func (s *Server) GetInventory(w http.ResponseWriter, r *http.Request) {
 	var ts []Transaction
 	s.db.Order("creation_date ASC").Find(&ts)
 
-	handler := &Handler{
-		inv:           NewInventory(),
-		ledger:        NewLedger(&EveMarketerAPI{client: &http.Client{}}),
-		typeFetcher:   NewDbTypeFetcher(s.db),
-		playerFetcher: NewDbPlayerFetcher(s.db),
-	}
-
-	creditMuts, debitMuts, err := handler.Process(ts)
+	creditMuts, debitMuts, err := s.handler.Process(ts)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusBadGateway)
@@ -106,8 +111,8 @@ func (s *Server) GetInventory(w http.ResponseWriter, r *http.Request) {
 
 	var inv []GetInventoryRspItem
 
-	for typeId, contents := range handler.inv.contents {
-		ty, _ := handler.typeFetcher.getTypeById(typeId)
+	for typeId, contents := range s.handler.inv.contents {
+		ty, _ := s.handler.typeFetcher.getTypeById(typeId)
 
 		inv = append(inv, GetInventoryRspItem{
 			TypeId:   typeId,
@@ -139,16 +144,9 @@ func (s *Server) GetLedger(w http.ResponseWriter, r *http.Request) {
 	var ts []Transaction
 	s.db.Order("creation_date ASC").Find(&ts)
 
-	handler := &Handler{
-		inv:           NewInventory(),
-		ledger:        NewLedger(&EveMarketerAPI{client: &http.Client{}}),
-		typeFetcher:   NewDbTypeFetcher(s.db),
-		playerFetcher: NewDbPlayerFetcher(s.db),
-	}
+	creditMuts, debitMuts, err := s.handler.Process(ts)
 
-	creditMuts, debitMuts, err := handler.Process(ts)
-
-	mutations, err := handler.ledger.HandleMutations(debitMuts, creditMuts)
+	mutations, err := s.handler.ledger.HandleMutations(debitMuts, creditMuts)
 
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
@@ -156,7 +154,7 @@ func (s *Server) GetLedger(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 	}
 
-	ledgerSummary := calculateLedgerSummary(mutations)
+	ledgerSummary := s.handler.ledger.CalculateLedgerSummary(mutations)
 
 	body, _ := json.Marshal(&GetLedgerRsp{
 		Ledger:    ledgerSummary,
@@ -165,30 +163,6 @@ func (s *Server) GetLedger(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
-}
-
-/**
-TODO Unittest
- */
-func calculateLedgerSummary(mutations []LedgerMutation) []GetLedgerRspItem {
-	ledgerByPlayer := make(map[string]*GetLedgerRspItem)
-	for _, mutation := range mutations {
-		if _, exists := ledgerByPlayer[mutation.PlayerName]; !exists {
-			ledgerByPlayer[mutation.PlayerName] = &GetLedgerRspItem{
-				PlayerName: mutation.PlayerName,
-				Amount:     float64(mutation.Change),
-			}
-		} else {
-			item := ledgerByPlayer[mutation.PlayerName]
-			item.Amount += float64(mutation.Change)
-		}
-	}
-
-	var ledgerSummary []GetLedgerRspItem
-	for _, ledgerRspItem := range ledgerByPlayer {
-		ledgerSummary = append(ledgerSummary, *ledgerRspItem)
-	}
-	return ledgerSummary
 }
 
 type GetLedgerRspItem struct {

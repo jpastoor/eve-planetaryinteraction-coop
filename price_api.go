@@ -15,7 +15,7 @@ type PriceAPI interface {
 
 type EveMarketerAPI struct {
 	client *http.Client
-	cache  map[int]float32
+	cache  map[int]float32 // TODO Cache should have some notion of time. (i.e. keep prices for 6 hours)
 }
 
 type EveMarketerRsp []EveMarketerRspType

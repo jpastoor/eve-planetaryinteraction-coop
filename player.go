@@ -1,6 +1,9 @@
 package main
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+	"fmt"
+)
 
 type Player struct {
 	Name string `gorm:"type:varchar(100);PRIMARY_KEY"`
@@ -8,12 +11,11 @@ type Player struct {
 }
 
 type PlayerFetcher interface {
-	getOrCreatePlayerByName(PlayerName string) (*Player, error)
+	getOrCreatePlayerByName(playerName string) (*Player, error)
 }
 
 type DbPlayerFetcher struct {
 	db          *gorm.DB
-	cacheById   map[int]*Player
 	cacheByName map[string]*Player
 }
 
@@ -24,16 +26,16 @@ func NewDbPlayerFetcher(db *gorm.DB) *DbPlayerFetcher {
 	}
 }
 
-func (tf *DbPlayerFetcher) getOrCreatePlayerByName(PlayerName string) (*Player, error) {
-	if ty, exists := tf.cacheByName[PlayerName]; exists {
+func (tf *DbPlayerFetcher) getOrCreatePlayerByName(playerName string) (*Player, error) {
+	if ty, exists := tf.cacheByName[playerName]; exists {
 		return ty, nil
 	}
 
 	ty := Player{}
-	tf.db.Where("name = ?", PlayerName).First(&ty)
+	tf.db.Where("name = ?", playerName).First(&ty)
 
 	if &ty == nil {
-		ty.Name = PlayerName
+		ty.Name = playerName
 		tf.db.Create(ty)
 	}
 
@@ -41,8 +43,21 @@ func (tf *DbPlayerFetcher) getOrCreatePlayerByName(PlayerName string) (*Player, 
 		return nil, tf.db.Error
 	}
 
-	tf.cacheByName[PlayerName] = &ty
+	tf.cacheByName[playerName] = &ty
 
 	return &ty, nil
 }
 
+/**
+Helper when writing tests. Uses only in-memory cache
+ */
+type DbPlayerFetcherMock struct {
+	cacheByName map[string]*Player
+}
+
+func (tf *DbPlayerFetcherMock) getOrCreatePlayerByName(playerName string) (*Player, error) {
+	if ty, exists := tf.cacheByName[playerName]; exists {
+		return ty, nil
+	}
+	return nil, fmt.Errorf("Player %s not found", playerName)
+}

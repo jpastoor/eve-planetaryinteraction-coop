@@ -59,3 +59,25 @@ func (l *Ledger) HandleMutations(debit []InventoryMutation, credit []InventoryMu
 
 	return lml, nil
 }
+
+
+func (l *Ledger) CalculateLedgerSummary(mutations []LedgerMutation) []GetLedgerRspItem {
+	ledgerByPlayer := make(map[string]*GetLedgerRspItem)
+	for _, mutation := range mutations {
+		if _, exists := ledgerByPlayer[mutation.PlayerName]; !exists {
+			ledgerByPlayer[mutation.PlayerName] = &GetLedgerRspItem{
+				PlayerName: mutation.PlayerName,
+				Amount:     float64(mutation.Change),
+			}
+		} else {
+			item := ledgerByPlayer[mutation.PlayerName]
+			item.Amount += float64(mutation.Change)
+		}
+	}
+
+	ledgerSummary := []GetLedgerRspItem{}
+	for _, ledgerRspItem := range ledgerByPlayer {
+		ledgerSummary = append(ledgerSummary, *ledgerRspItem)
+	}
+	return ledgerSummary
+}

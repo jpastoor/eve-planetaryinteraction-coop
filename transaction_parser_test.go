@@ -7,7 +7,14 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	tp := NewTransactionParser(NewDbTypeFetcher(nil))
+	tp := NewTransactionParser(&TypeFetcherMock{
+		cacheByName: map[string]*Type{
+			"Oxygen": {TypeID: 1, TypeName: "Oxygen", Volume: 1},
+			"Nano-Factory": {TypeID: 2, TypeName: "Nano-Factory", Volume: 2},
+			"Reactive Metals": {TypeID: 3, TypeName: "Reactive Metals", Volume: 3},
+		},
+	})
+
 	file, _ := ioutil.ReadFile("./examples/example_log.log")
 	output, errs := tp.Parse(string(file))
 
@@ -26,7 +33,7 @@ func TestParse(t *testing.T) {
 	for _, ts := range output {
 		outputHashes = append(outputHashes, ts.Id)
 	}
-	
+
 	if !reflect.DeepEqual(expected, outputHashes) {
 		t.Errorf("Expected %v, but got %v", expected, outputHashes)
 	}

@@ -23,8 +23,6 @@ $(document).ready(function () {
             success: [function (result) {
                 $('#table-inventory').find('tbody').html("");
                 jQuery.each(result.Inventory, function () {
-
-
                     var amount = 0;
                     for (var i = 0; i < this.Stacks.length; i++) {
                         amount += this.Stacks[i].Amount;
@@ -102,7 +100,7 @@ $(document).ready(function () {
             method: "POST",
             contentType: "text/plain",
             data: $("#parselog").val(),
-            success: [function (result) {
+            success: [function () {
                 var responseDiv = $("#responseDiv");
                 responseDiv.html("<strong>Parsed transactions!</strong>");
                 $("#parselog").val("");

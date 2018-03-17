@@ -61,6 +61,7 @@ Fetches a list of uncommitted transactions
 func (s *Server) GetTransactions(w http.ResponseWriter, r *http.Request) {
 	var ts []Transaction
 	s.db.Order("creation_date DESC").Find(&ts)
+	// TODO Filter on uncomitted
 
 	bytes, err := json.Marshal(ts)
 	if err != nil {
@@ -76,6 +77,9 @@ func (s *Server) GetTransactions(w http.ResponseWriter, r *http.Request) {
 Marking transactions for corp changes the playerName of the transaction at runtime to ADHC
  */
 func (s *Server) MarkTransactionForCorp(w http.ResponseWriter, r *http.Request) {
+
+	// TODO We need a way to unmark transactions as well
+	// TODO We need to make sure only uncommitted transactions can be changed
 
 	vars := mux.Vars(r)
 	transactionId := vars["transactionId"]
@@ -101,6 +105,7 @@ func (s *Server) GetInventory(w http.ResponseWriter, r *http.Request) {
 
 	var ts []Transaction
 	s.db.Order("creation_date ASC").Find(&ts)
+	// TODO Filter on uncomitted
 
 	creditMuts, debitMuts, err := s.handler.Process(ts)
 	if err != nil {
@@ -143,6 +148,7 @@ type GetInventoryRspItem struct {
 func (s *Server) GetLedger(w http.ResponseWriter, r *http.Request) {
 	var ts []Transaction
 	s.db.Order("creation_date ASC").Find(&ts)
+	// TODO Filter on uncomitted
 
 	creditMuts, debitMuts, err := s.handler.Process(ts)
 

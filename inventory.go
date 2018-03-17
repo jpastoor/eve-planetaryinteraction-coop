@@ -3,18 +3,13 @@ package main
 /**
 Idea here is that you can always rebuild the inventory contents by loading in all the inventory mutations.
 So the inventory contents is just an in-memory helper but the real deal is in the mutations that are persisted.
-
-TODO Write tests that ensure contents is in sync with the mutations at all times
-
  */
 type Inventory struct {
 	contents map[int][]InventoryStack
 }
 
 func NewInventory() (*Inventory) {
-
 	// TODO Read from the InventoryState table and prefill
-
 	return &Inventory{
 		contents: make(map[int][]InventoryStack),
 	}

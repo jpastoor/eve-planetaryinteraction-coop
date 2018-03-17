@@ -7,6 +7,10 @@ type Handler struct {
 	typeFetcher   TypeFetcher
 }
 
+/**
+TODO This method does not correctly take into account the order in which transactions are done, so the output can vary with the same input.
+     Think this comes due to the unsortedness of the data map.
+ */
 func (h *Handler) Process(ts []Transaction) (invCreditMuts []InventoryMutation, invDebitMuts []InventoryMutation,  err error) {
 
 	data := map[int]map[string]int{}

@@ -91,3 +91,20 @@ func (inv *Inventory) Sub(im InventoryMutation) (creditMuts []InventoryMutation,
 
 	return creditMuts, debitMuts
 }
+
+func (inv *Inventory) getInventoryFlat() (InventoryFlat) {
+	invFlat := make(InventoryFlat)
+	for typeId, contents := range inv.contents {
+		if _, exists := invFlat[typeId]; !exists {
+			invFlat[typeId] = 0
+		}
+
+		for _, stack := range contents {
+			invFlat[typeId] += stack.Amount
+		}
+	}
+
+	return invFlat
+}
+
+type InventoryFlat map[int]int

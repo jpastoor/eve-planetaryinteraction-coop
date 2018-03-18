@@ -3,3 +3,5 @@ import:
 - package: github.com/jinzhu/gorm
 - package: github.com/gorilla/mux
 - package: github.com/gorilla/handlers
+- package: gopkg.in/yaml.v2
+  version: ^2.1.1

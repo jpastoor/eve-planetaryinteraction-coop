@@ -51,6 +51,10 @@ func (l *EveMarketerAPI) FetchPrices(typeIds []int) (map[int]float32, error) {
 		}
 	}
 
+	if len(typeIdsStr) == 0 {
+		return  output, nil
+	}
+
 	url := fmt.Sprintf("https://api.evemarketer.com/ec/marketstat/json?usesystem=30000142&typeid=%s", strings.Join(typeIdsStr, ","))
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -79,6 +83,7 @@ func (l *EveMarketerAPI) FetchPrices(typeIds []int) (map[int]float32, error) {
 	for _, typeStat := range parsedRsp {
 		typeId := typeStat.Buy.ForQuery.Types[0]
 		output[typeId] = typeStat.Buy.FivePercent
+		l.cache[typeId] = output[typeId]
 	}
 
 	return output, nil

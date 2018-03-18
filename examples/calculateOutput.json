@@ -1,0 +1,634 @@
+[
+  {
+    "OutputTypeName": "Bacteria",
+    "ISK": 9003426,
+    "VolumeReduction": 29618,
+    "Cycles": 1322,
+    "TotalTime": 2379600,
+    "InputMats": [
+      {
+        "TypeName": "Microorganisms",
+        "Quantity": 3966000
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Biocells",
+    "ISK": 7358853,
+    "VolumeReduction": 13474,
+    "Cycles": 588,
+    "TotalTime": 2116800,
+    "InputMats": [
+      {
+        "TypeName": "Biofuels",
+        "Quantity": 23520
+      },
+      {
+        "TypeName": "Precious Metals",
+        "Quantity": 23520
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Biofuels",
+    "ISK": 183842,
+    "VolumeReduction": 1042,
+    "Cycles": 46,
+    "TotalTime": 82800,
+    "InputMats": [
+      {
+        "TypeName": "Carbon Compounds",
+        "Quantity": 138000
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Biomass",
+    "ISK": 9779496,
+    "VolumeReduction": 41609,
+    "Cycles": 1857,
+    "TotalTime": 3342600,
+    "InputMats": [
+      {
+        "TypeName": "Planktic Colonies",
+        "Quantity": 5571000
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Biotech Research Reports",
+    "ISK": 792785,
+    "VolumeReduction": 7142,
+    "Cycles": 264,
+    "TotalTime": 950400,
+    "InputMats": [
+      {
+        "TypeName": "Nanites",
+        "Quantity": 2640
+      },
+      {
+        "TypeName": "Livestock",
+        "Quantity": 2640
+      },
+      {
+        "TypeName": "Construction Blocks",
+        "Quantity": 2640
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Chiral Structures",
+    "ISK": -1060640,
+    "VolumeReduction": 5227,
+    "Cycles": 233,
+    "TotalTime": 419400,
+    "InputMats": [
+      {
+        "TypeName": "Non-CS Crystals",
+        "Quantity": 699000
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Construction Blocks",
+    "ISK": 3702828,
+    "VolumeReduction": 3164,
+    "Cycles": 138,
+    "TotalTime": 496800,
+    "InputMats": [
+      {
+        "TypeName": "Reactive Metals",
+        "Quantity": 5520
+      },
+      {
+        "TypeName": "Toxic Metals",
+        "Quantity": 5520
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Consumer Electronics",
+    "ISK": 1859559,
+    "VolumeReduction": 3164,
+    "Cycles": 138,
+    "TotalTime": 496800,
+    "InputMats": [
+      {
+        "TypeName": "Toxic Metals",
+        "Quantity": 5520
+      },
+      {
+        "TypeName": "Chiral Structures",
+        "Quantity": 5520
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Coolant",
+    "ISK": 9555185,
+    "VolumeReduction": 29957,
+    "Cycles": 1308,
+    "TotalTime": 4708800,
+    "InputMats": [
+      {
+        "TypeName": "Electrolytes",
+        "Quantity": 52320
+      },
+      {
+        "TypeName": "Water",
+        "Quantity": 52320
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Enriched Uranium",
+    "ISK": 2260274,
+    "VolumeReduction": 3164,
+    "Cycles": 138,
+    "TotalTime": 496800,
+    "InputMats": [
+      {
+        "TypeName": "Precious Metals",
+        "Quantity": 5520
+      },
+      {
+        "TypeName": "Toxic Metals",
+        "Quantity": 5520
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Fertilizer",
+    "ISK": 39330780,
+    "VolumeReduction": 24456,
+    "Cycles": 1067,
+    "TotalTime": 3841200,
+    "InputMats": [
+      {
+        "TypeName": "Bacteria",
+        "Quantity": 42680
+      },
+      {
+        "TypeName": "Proteins",
+        "Quantity": 42680
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Genetically Enhanced Livestock",
+    "ISK": -9841911,
+    "VolumeReduction": 24308,
+    "Cycles": 1061,
+    "TotalTime": 3819600,
+    "InputMats": [
+      {
+        "TypeName": "Proteins",
+        "Quantity": 42440
+      },
+      {
+        "TypeName": "Biomass",
+        "Quantity": 42440
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Livestock",
+    "ISK": 7779857,
+    "VolumeReduction": 24456,
+    "Cycles": 1067,
+    "TotalTime": 3841200,
+    "InputMats": [
+      {
+        "TypeName": "Proteins",
+        "Quantity": 42680
+      },
+      {
+        "TypeName": "Biofuels",
+        "Quantity": 42680
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Mechanical Parts",
+    "ISK": 1363470,
+    "VolumeReduction": 13474,
+    "Cycles": 588,
+    "TotalTime": 2116800,
+    "InputMats": [
+      {
+        "TypeName": "Reactive Metals",
+        "Quantity": 23520
+      },
+      {
+        "TypeName": "Precious Metals",
+        "Quantity": 23520
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Microfiber Shielding",
+    "ISK": 1767365,
+    "VolumeReduction": 2382,
+    "Cycles": 104,
+    "TotalTime": 374400,
+    "InputMats": [
+      {
+        "TypeName": "Industrial Fibers",
+        "Quantity": 4160
+      },
+      {
+        "TypeName": "Silicon",
+        "Quantity": 4160
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Miniature Electronics",
+    "ISK": 1320873,
+    "VolumeReduction": 2382,
+    "Cycles": 104,
+    "TotalTime": 374400,
+    "InputMats": [
+      {
+        "TypeName": "Chiral Structures",
+        "Quantity": 4160
+      },
+      {
+        "TypeName": "Silicon",
+        "Quantity": 4160
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Nanites",
+    "ISK": 62796674,
+    "VolumeReduction": 132261,
+    "Cycles": 5775,
+    "TotalTime": 20790000,
+    "InputMats": [
+      {
+        "TypeName": "Bacteria",
+        "Quantity": 231000
+      },
+      {
+        "TypeName": "Reactive Metals",
+        "Quantity": 231000
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Oxides",
+    "ISK": 156377,
+    "VolumeReduction": 3298,
+    "Cycles": 144,
+    "TotalTime": 518400,
+    "InputMats": [
+      {
+        "TypeName": "Oxidizing Compound",
+        "Quantity": 5760
+      },
+      {
+        "TypeName": "Oxygen",
+        "Quantity": 5760
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Oxidizing Compound",
+    "ISK": 156491,
+    "VolumeReduction": 15442,
+    "Cycles": 689,
+    "TotalTime": 1240200,
+    "InputMats": [
+      {
+        "TypeName": "Reactive Gas",
+        "Quantity": 2067000
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Oxygen",
+    "ISK": 3266293,
+    "VolumeReduction": 19848,
+    "Cycles": 886,
+    "TotalTime": 1594800,
+    "InputMats": [
+      {
+        "TypeName": "Noble Gas",
+        "Quantity": 2658000
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Plasmoids",
+    "ISK": 382607,
+    "VolumeReduction": 15865,
+    "Cycles": 708,
+    "TotalTime": 1274400,
+    "InputMats": [
+      {
+        "TypeName": "Suspended Plasma",
+        "Quantity": 2124000
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Polyaramids",
+    "ISK": 2794457,
+    "VolumeReduction": 3298,
+    "Cycles": 144,
+    "TotalTime": 518400,
+    "InputMats": [
+      {
+        "TypeName": "Oxidizing Compound",
+        "Quantity": 5760
+      },
+      {
+        "TypeName": "Industrial Fibers",
+        "Quantity": 5760
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Polytextiles",
+    "ISK": 936394,
+    "VolumeReduction": 4855,
+    "Cycles": 212,
+    "TotalTime": 763200,
+    "InputMats": [
+      {
+        "TypeName": "Biofuels",
+        "Quantity": 8480
+      },
+      {
+        "TypeName": "Industrial Fibers",
+        "Quantity": 8480
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Precious Metals",
+    "ISK": -123949,
+    "VolumeReduction": 2329,
+    "Cycles": 103,
+    "TotalTime": 185400,
+    "InputMats": [
+      {
+        "TypeName": "Noble Metals",
+        "Quantity": 309000
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Proteins",
+    "ISK": 4704074,
+    "VolumeReduction": 15397,
+    "Cycles": 687,
+    "TotalTime": 1236600,
+    "InputMats": [
+      {
+        "TypeName": "Complex Organisms",
+        "Quantity": 2061000
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Reactive Metals",
+    "ISK": 2608768,
+    "VolumeReduction": 15251,
+    "Cycles": 680,
+    "TotalTime": 1224000,
+    "InputMats": [
+      {
+        "TypeName": "Base Metals",
+        "Quantity": 2040000
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Rocket Fuel",
+    "ISK": 21187515,
+    "VolumeReduction": 22613,
+    "Cycles": 987,
+    "TotalTime": 3553200,
+    "InputMats": [
+      {
+        "TypeName": "Plasmoids",
+        "Quantity": 39480
+      },
+      {
+        "TypeName": "Electrolytes",
+        "Quantity": 39480
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Silicate Glass",
+    "ISK": -579436,
+    "VolumeReduction": 2382,
+    "Cycles": 104,
+    "TotalTime": 374400,
+    "InputMats": [
+      {
+        "TypeName": "Oxidizing Compound",
+        "Quantity": 4160
+      },
+      {
+        "TypeName": "Silicon",
+        "Quantity": 4160
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Silicon",
+    "ISK": 322591,
+    "VolumeReduction": 1601,
+    "Cycles": 71,
+    "TotalTime": 127800,
+    "InputMats": [
+      {
+        "TypeName": "Felsic Magma",
+        "Quantity": 213000
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Supertensile Plastics",
+    "ISK": 47091377,
+    "VolumeReduction": 24308,
+    "Cycles": 1061,
+    "TotalTime": 3819600,
+    "InputMats": [
+      {
+        "TypeName": "Oxygen",
+        "Quantity": 42440
+      },
+      {
+        "TypeName": "Biomass",
+        "Quantity": 42440
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Synthetic Oil",
+    "ISK": 11449125,
+    "VolumeReduction": 29957,
+    "Cycles": 1308,
+    "TotalTime": 4708800,
+    "InputMats": [
+      {
+        "TypeName": "Electrolytes",
+        "Quantity": 52320
+      },
+      {
+        "TypeName": "Oxygen",
+        "Quantity": 52320
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Test Cultures",
+    "ISK": 107141474,
+    "VolumeReduction": 227543,
+    "Cycles": 9936,
+    "TotalTime": 35769600,
+    "InputMats": [
+      {
+        "TypeName": "Bacteria",
+        "Quantity": 397440
+      },
+      {
+        "TypeName": "Water",
+        "Quantity": 397440
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Toxic Metals",
+    "ISK": -140,
+    "VolumeReduction": 234,
+    "Cycles": 10,
+    "TotalTime": 18000,
+    "InputMats": [
+      {
+        "TypeName": "Heavy Metals",
+        "Quantity": 30000
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Transcranial Microcontrollers",
+    "ISK": 12987058,
+    "VolumeReduction": 3174,
+    "Cycles": 264,
+    "TotalTime": 950400,
+    "InputMats": [
+      {
+        "TypeName": "Biocells",
+        "Quantity": 2640
+      },
+      {
+        "TypeName": "Nanites",
+        "Quantity": 2640
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Transmitter",
+    "ISK": 14902202,
+    "VolumeReduction": 22613,
+    "Cycles": 987,
+    "TotalTime": 3553200,
+    "InputMats": [
+      {
+        "TypeName": "Plasmoids",
+        "Quantity": 39480
+      },
+      {
+        "TypeName": "Chiral Structures",
+        "Quantity": 39480
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Vaccines",
+    "ISK": 23532853,
+    "VolumeReduction": 4774,
+    "Cycles": 397,
+    "TotalTime": 1429200,
+    "InputMats": [
+      {
+        "TypeName": "Livestock",
+        "Quantity": 3970
+      },
+      {
+        "TypeName": "Viral Agent",
+        "Quantity": 3970
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Viral Agent",
+    "ISK": 9129961,
+    "VolumeReduction": 24308,
+    "Cycles": 1061,
+    "TotalTime": 3819600,
+    "InputMats": [
+      {
+        "TypeName": "Bacteria",
+        "Quantity": 42440
+      },
+      {
+        "TypeName": "Biomass",
+        "Quantity": 42440
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Water",
+    "ISK": 632933,
+    "VolumeReduction": 3512,
+    "Cycles": 156,
+    "TotalTime": 280800,
+    "InputMats": [
+      {
+        "TypeName": "Aqueous Liquids",
+        "Quantity": 468000
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Water-Cooled CPU",
+    "ISK": 19160759,
+    "VolumeReduction": 132261,
+    "Cycles": 5775,
+    "TotalTime": 20790000,
+    "InputMats": [
+      {
+        "TypeName": "Reactive Metals",
+        "Quantity": 231000
+      },
+      {
+        "TypeName": "Water",
+        "Quantity": 231000
+      }
+    ]
+  },
+  {
+    "OutputTypeName": "Superconductors",
+    "ISK": 22406523,
+    "VolumeReduction": 22613,
+    "Cycles": 987,
+    "TotalTime": 3553200,
+    "InputMats": [
+      {
+        "TypeName": "Plasmoids",
+        "Quantity": 39480
+      },
+      {
+        "TypeName": "Water",
+        "Quantity": 39480
+      }
+    ]
+  }
+]

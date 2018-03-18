@@ -10,26 +10,22 @@ import (
 )
 
 type Server struct {
-	http    *http.Client
-	r       *mux.Router
-	db      *gorm.DB
-	handler *Handler
+	http          *http.Client
+	r             *mux.Router
+	db            *gorm.DB
+	typeFetcher   TypeFetcher
+	playerFetcher PlayerFetcher
+	priceAPI      PriceAPI
 }
 
 func NewServer(r *mux.Router, db *gorm.DB) (*Server) {
-
-	handler := &Handler{
-		inv:           NewInventory(),
-		ledger:        NewLedger(&EveMarketerAPI{client: &http.Client{}}),
+	s := &Server{
+		http:          &http.Client{},
+		r:             r,
+		db:            db,
 		typeFetcher:   NewDbTypeFetcher(db),
 		playerFetcher: NewDbPlayerFetcher(db),
-	}
-
-	s := &Server{
-		http:    &http.Client{},
-		r:       r,
-		db:      db,
-		handler: handler,
+		priceAPI:      &EveMarketerAPI{client: &http.Client{}, cache: make(map[int]float32)},
 	}
 
 	r.HandleFunc("/", s.GetRoot).Methods(http.MethodGet)
@@ -41,6 +37,7 @@ func NewServer(r *mux.Router, db *gorm.DB) (*Server) {
 	r.HandleFunc("/commits", s.Commit).Methods(http.MethodPost)
 	r.HandleFunc("/commits/{commitId}/rollback", s.RollbackCommit).Methods(http.MethodPost)
 	r.HandleFunc("/players/{playerName}", s.UpdatePlayer).Methods(http.MethodPut)
+	r.HandleFunc("/calculateSchematicProfit", s.CalculateSchematicProfit).Methods(http.MethodGet)
 
 	return s
 }
@@ -103,11 +100,18 @@ func (s *Server) UpdatePlayer(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) GetInventory(w http.ResponseWriter, r *http.Request) {
 
+	handler := &Handler{
+		inv:           NewInventory(),
+		ledger:        NewLedger(s.priceAPI),
+		typeFetcher:   s.typeFetcher,
+		playerFetcher: s.playerFetcher,
+	}
+
 	var ts []Transaction
 	s.db.Order("creation_date ASC").Find(&ts)
 	// TODO Filter on uncomitted
 
-	creditMuts, debitMuts, err := s.handler.Process(ts)
+	creditMuts, debitMuts, err := handler.Process(ts)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusBadGateway)
@@ -116,8 +120,8 @@ func (s *Server) GetInventory(w http.ResponseWriter, r *http.Request) {
 
 	var inv []GetInventoryRspItem
 
-	for typeId, contents := range s.handler.inv.contents {
-		ty, _ := s.handler.typeFetcher.getTypeById(typeId)
+	for typeId, contents := range handler.inv.contents {
+		ty, _ := handler.typeFetcher.getTypeById(typeId)
 
 		inv = append(inv, GetInventoryRspItem{
 			TypeId:   typeId,
@@ -146,13 +150,21 @@ type GetInventoryRspItem struct {
 }
 
 func (s *Server) GetLedger(w http.ResponseWriter, r *http.Request) {
+
+	handler := &Handler{
+		inv:           NewInventory(),
+		ledger:        NewLedger(s.priceAPI),
+		typeFetcher:   s.typeFetcher,
+		playerFetcher: s.playerFetcher,
+	}
+
 	var ts []Transaction
 	s.db.Order("creation_date ASC").Find(&ts)
 	// TODO Filter on uncomitted
 
-	creditMuts, debitMuts, err := s.handler.Process(ts)
+	creditMuts, debitMuts, err := handler.Process(ts)
 
-	mutations, err := s.handler.ledger.HandleMutations(debitMuts, creditMuts)
+	mutations, err := handler.ledger.HandleMutations(debitMuts, creditMuts)
 
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
@@ -160,7 +172,7 @@ func (s *Server) GetLedger(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 	}
 
-	ledgerSummary := s.handler.ledger.CalculateLedgerSummary(mutations)
+	ledgerSummary := handler.ledger.CalculateLedgerSummary(mutations)
 
 	body, _ := json.Marshal(&GetLedgerRsp{
 		Ledger:    ledgerSummary,
@@ -179,6 +191,40 @@ type GetLedgerRspItem struct {
 type GetLedgerRsp struct {
 	Ledger    []GetLedgerRspItem
 	Mutations []LedgerMutation
+}
+
+func (s *Server) CalculateSchematicProfit(w http.ResponseWriter, r *http.Request) {
+
+	handler := &Handler{
+		inv:           NewInventory(),
+		ledger:        NewLedger(s.priceAPI),
+		typeFetcher:   s.typeFetcher,
+		playerFetcher: s.playerFetcher,
+	}
+
+	var ts []Transaction
+	s.db.Order("creation_date ASC").Find(&ts)
+	// TODO Filter on uncomitted
+
+	_, _, err := handler.Process(ts)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusBadGateway)
+		w.Write([]byte(err.Error()))
+	}
+
+	profit, err := handler.CalculateSchematicProfit()
+	if err != nil {
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusBadGateway)
+		w.Write([]byte(err.Error()))
+	}
+
+	body, _ := json.Marshal(&profit)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(body)
 }
 
 func (s *Server) RollbackCommit(w http.ResponseWriter, r *http.Request) {
